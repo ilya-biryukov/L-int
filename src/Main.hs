@@ -29,7 +29,9 @@ readProgram = Program . fst . readStatement
     (st1, rest') = readStatement rest
     (st2, rest'') = readStatement rest'
   readStatement ("r": var: rest) = (Read var, rest)
-  readStatement ("w": var: rest) = (Write var, rest)
+  readStatement ("w": rest) = (Write expr, rest')
+    where
+    (expr, rest') = readExpr rest
   readStatement ("i": rest) = (ITE cond th el, rest''')
     where
     (cond, rest') = readExpr rest

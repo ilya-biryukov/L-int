@@ -26,11 +26,11 @@ intStatement (Read var) env = do
       putStr $ var ++ " < "
       hFlush stdout
       readLn :: IO Integer
-intStatement (Write var) env = do
-  putStrLn $ var ++ " = " ++ show n
+intStatement (Write expr) env = do
+  putStrLn $ "  > " ++ show n
   return env
     where
-    (Just n) = Map.lookup var env
+    n = eval expr env
 intStatement (Sequence s1 s2) env = do
   intStatement s1 env >>= intStatement s2
 intStatement (Assign var expr) env =

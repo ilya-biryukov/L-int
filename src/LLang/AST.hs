@@ -19,7 +19,7 @@ data Expression =
 data Statement = 
   Skip |
   Read Variable |
-  Write Variable |
+  Write Expression |
   Assign Variable Expression |
   ITE { 
     ifCondifiton :: Expression,
