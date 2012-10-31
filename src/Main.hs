@@ -7,14 +7,16 @@ import System.Environment(getArgs)
 
 import LLang.AST
 import LLang.Interpreter
+import LLang.Printer
 
 main :: IO ()
 main = do
   args <- getArgs
   fname <- return $ args !! 0
   s <- readFile fname
-  putStrLn $ show s
-  int $ readProgram $ lines s
+  p <- return $ readProgram $ lines s
+  --int $ readProgram $ lines s
+  putStrLn $ printProgram p
 
 
 readProgram :: [String] -> Program
