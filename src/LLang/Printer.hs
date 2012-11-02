@@ -6,38 +6,42 @@ import LLang.AST
 
 printProgram :: Program -> String
 printProgram (Program s) = 
-  printInCurlyBraces s ""
+  printInCurlyBraces s 0 ""
 
 type Indent = Int
 printIndent :: Indent -> ShowS
 printIndent n = 
   printText $ take n $ repeat ' '
 
-printInCurlyBraces :: Statement -> ShowS
-printInCurlyBraces s = 
+printInCurlyBraces :: Statement -> Indent -> ShowS
+printInCurlyBraces s ind = 
   printText "{\n" . 
-  printStatement s . printText "\n" .
-  printText "}\n"
+  printIndent (ind + 4) . 
+  printStatement s (ind + 4). printText "\n" .
+  printText "}"
 
-printStatement :: Statement -> ShowS
-printStatement (Assign var expr) = 
+printStatement :: Statement -> Indent -> ShowS
+printStatement (Sequence s1 s2) ind =
+  printStatement s1 ind . printText ";\n" . printIndent ind .
+  printStatement s2 ind
+printStatement (ITE cond th el) ind = 
+  printText "if " . printExpression cond . printText " then\n" . printIndent ind .
+  printInCurlyBraces th ind. 
+  printText "else\n" . printIndent ind .
+  printInCurlyBraces el ind
+printStatement (While cond s) ind = 
+  printText "whlie " . printExpression cond . printText " do\n" . printIndent ind .
+  printInCurlyBraces s ind
+printStatement s _ = printStatement' s
+
+printStatement' :: Statement -> ShowS
+printStatement' (Assign var expr) = 
   printText var . printText " := " . printExpression expr
-printStatement (Skip) =
+printStatement' (Skip) =
   printText "skip"
-printStatement (Sequence s1 s2) =
-  printStatement s1 . printText ";\n" .
-  printStatement s2
-printStatement (ITE cond th el) = 
-  printText "if " . printExpression cond . printText " then\n" .
-  printInCurlyBraces th . 
-  printText "else\n" .
-  printInCurlyBraces el
-printStatement (While cond s) = 
-  printText "whlie " . printExpression cond . printText " do\n" .
-  printInCurlyBraces s
-printStatement (Read var) = 
+printStatement' (Read var) = 
   printText "read(" . printText var . printText ")"
-printStatement (Write expr) = 
+printStatement' (Write expr) = 
   printText "write(" . printExpression expr . printText ")"
 
 printExpression :: Expression -> ShowS
