@@ -17,5 +17,5 @@ cabal-version:       >=1.8
 executable l-int
   main-is:             Main.hs
   hs-source-dirs:      src
-  other-modules:       LLang.AST, LLang.Interpreter
+  other-modules:       LLang.AST, LLang.Interpreter, LLang.Printer, LLang.Mix
   build-depends:       base >= 4.5 , containers >= 0.5

@@ -8,6 +8,7 @@ import System.Environment(getArgs)
 import LLang.AST
 import LLang.Interpreter
 import LLang.Printer
+import LLang.Mix
 
 main :: IO ()
 main = do
@@ -15,8 +16,8 @@ main = do
   fname <- return $ args !! 0
   s <- readFile fname
   p <- return $ readProgram $ lines s
-  --int $ readProgram $ lines s
-  putStrLn $ printProgram p
+  mixed <- mix $ readProgram $ lines s
+  putStrLn $ printProgram mixed
 
 
 readProgram :: [String] -> Program
