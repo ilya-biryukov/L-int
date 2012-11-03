@@ -50,8 +50,6 @@ printExpression (Binary left op right) =
   printText "(" . printExpression right . printText ")"
 printExpression (Constant n) = (show n ++)
 printExpression (VariableExpr var) = (var ++)
-printExpression (Unary op expr) = 
-  printText op . printExpression expr
 
 printText :: String -> ShowS
 printText s = (s++)

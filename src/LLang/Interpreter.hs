@@ -52,11 +52,6 @@ eval (Constant n) _ = n
 eval (VariableExpr v) env = val
   where
   (Just val) = Map.lookup v env
-eval (Unary op e) env = 
-  applyOp op $ eval e env
-    where
-    applyOp "+" = id
-    applyOp "-" = negate
 eval (Binary left op right) env = 
   applyOp op leftRes rightRes
     where

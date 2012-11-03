@@ -13,8 +13,7 @@ type Variable = String
 data Expression = 
   Constant Integer | 
   VariableExpr Variable |
-  Binary Expression Operator Expression |
-  Unary Operator Expression
+  Binary Expression Operator Expression
 
 data Statement = 
   Skip |

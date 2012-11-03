@@ -111,8 +111,3 @@ eval expr env = (val, newExpr)
 eval' :: Expression -> Environment -> Value
 eval' (Constant n) _ = Static n
 eval' (VariableExpr v) env = lookupValue env v
-eval' (Unary op e) env = 
-  applyOp op $ fst $ eval e env
-    where
-    applyOp "+" = id
-    applyOp "-" = liftOp negate
