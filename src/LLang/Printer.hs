@@ -11,13 +11,12 @@ printProgram (Program s) =
 type Indent = Int
 printIndent :: Indent -> ShowS
 printIndent n = 
-  printText $ take n $ repeat ' '
+  printText $ replicate n ' '
 
 printInCurlyBraces :: Statement -> Indent -> ShowS
 printInCurlyBraces s ind = 
-  printText "{\n" . 
-  printIndent (ind + 4) . 
-  printStatement s (ind + 4). printText "\n" .
+  printText "{\n" . printIndent (ind + 4) . 
+  printStatement s (ind + 4) . printText "\n" . printIndent ind .
   printText "}"
 
 printStatement :: Statement -> Indent -> ShowS
@@ -26,7 +25,7 @@ printStatement (Sequence s1 s2) ind =
   printStatement s2 ind
 printStatement (ITE cond th el) ind = 
   printText "if " . printExpression cond . printText " then\n" . printIndent ind .
-  printInCurlyBraces th ind. 
+  printInCurlyBraces th ind . printText "\n" . printIndent ind . 
   printText "else\n" . printIndent ind .
   printInCurlyBraces el ind
 printStatement (While cond s) ind = 
