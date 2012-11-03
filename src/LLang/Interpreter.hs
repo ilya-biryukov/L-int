@@ -3,6 +3,7 @@ module LLang.Interpreter(
 ) where
 
 import System.IO(hFlush, stdout)
+import Control.Monad
 
 import LLang.AST
 import qualified Data.Map.Strict as Map
@@ -11,7 +12,7 @@ type Environment = Map.Map Variable Integer
 
 -- | Interprets programs
 int :: Program -> IO ()
-int (Program s) = intStatement s emptyEnv >> return ()
+int (Program s) = void $ intStatement s emptyEnv
   where
   emptyEnv = Map.empty 
 
@@ -22,8 +23,8 @@ intStatement (Read var) env = do
   n <- askForVar var
   return $ Map.insert var n env
     where 
-    askForVar var = do 
-      putStr $ var ++ " < "
+    askForVar varName = do 
+      putStr $ varName ++ " < "
       hFlush stdout
       readLn :: IO Integer
 intStatement (Write expr) env = do
@@ -31,18 +32,18 @@ intStatement (Write expr) env = do
   return env
     where
     n = eval expr env
-intStatement (Sequence s1 s2) env = do
+intStatement (Sequence s1 s2) env = 
   intStatement s1 env >>= intStatement s2
 intStatement (Assign var expr) env =
   return $ Map.insert var value env
     where
     value = eval expr env
 intStatement s@(While expr body) env = 
-  case (eval expr env) of
+  case eval expr env of
     0 -> return env
     _ -> intStatement body env >>= intStatement s
 intStatement (ITE cond th el) env =
-  case (eval cond env) of
+  case eval cond env of
     0 -> intStatement th env
     _ -> intStatement el env
 

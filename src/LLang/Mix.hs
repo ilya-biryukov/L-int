@@ -3,6 +3,7 @@ module LLang.Mix(
 ) where
 
 import System.IO(hFlush, stdout)
+import Data.Maybe
 
 import LLang.AST
 import qualified Data.Map.Strict as Map
@@ -15,13 +16,9 @@ readValue :: String -> Value
 readValue "_" = Dynamic
 readValue s = Static (read s)
 
-liftOp :: (Integer -> Integer) -> Value -> Value
-liftOp f Dynamic = Dynamic
-liftOp f (Static x) = Static $ f x
-
 liftOp2 :: (Integer -> Integer -> Integer) -> Value -> Value -> Value
-liftOp2 f Dynamic _ = Dynamic
-liftOp2 f _ Dynamic = Dynamic
+liftOp2 _ Dynamic _ = Dynamic
+liftOp2 _ _ Dynamic = Dynamic
 liftOp2 f (Static x) (Static y) = Static $ f x y
 
 type Environment = Map.Map Variable Value
@@ -30,14 +27,11 @@ emptyEnv :: Environment
 emptyEnv = Map.empty 
 
 lookupValue :: Environment -> Variable -> Value
-lookupValue env var = 
-  case Map.lookup var env of
-    Just n -> n
-    Nothing -> Dynamic
+lookupValue env var = fromMaybe Dynamic (Map.lookup var env) 
 
 -- | Partially evaluates programs
 mix :: Program -> IO Program
-mix (Program s) = mixStatement s emptyEnv >>= return . Program . snd
+mix (Program s) = liftM (Program . snd) (mixStatement s emptyEnv)
 
 -- | Partially evaluate a Statement in a given Environment
 mixStatement :: Statement -> Environment -> IO (Environment, Statement)
@@ -46,17 +40,17 @@ mixStatement s@(Read var) env = do
   n <- askForVar var 
   readWithValue n
     where 
-    askForVar var = do 
-      putStr $ var ++ " < "
+    askForVar varName = do 
+      putStr $ varName ++ " < "
       hFlush stdout
-      getLine >>= return . readValue
+      liftM readValue getLine 
     readWithValue n = return (newEnv, newStmt)
       where
       newEnv = Map.insert var n env
       newStmt = case n of 
-        Static n -> Skip
+        Static _ -> Skip
         Dynamic -> s 
-mixStatement (Write expr) env = do
+mixStatement (Write expr) env = 
   return (env, Write newExpr)
     where
     (_, newExpr) = eval expr env
@@ -70,18 +64,18 @@ mixStatement (Assign var expr) env =
     (value, newExpr) = eval expr env
     newEnv = Map.insert var value env
     newStmt = case value of 
-      Static n -> Skip
-      Dynamic -> (Assign var newExpr)
+      Static _ -> Skip
+      Dynamic -> Assign var newExpr
 mixStatement s@(While expr body) env = 
   mixStatement (ITE expr thStmt Skip) env
     where
     thStmt = Sequence body s
 mixStatement s@(ITE cond th el) env =
   let 
-    (value, newExpr) = eval cond env
+    (value, _) = eval cond env
     staticAssignments = Map.foldrWithKey addAssignment Skip env 
     addAssignment var (Static val) stmt = Sequence stmt (Assign var (Constant val))
-    addAssignment var Dynamic stmt = stmt
+    addAssignment _ Dynamic stmt = stmt
   in
     case value of
       Static 0 -> mixStatement el env
