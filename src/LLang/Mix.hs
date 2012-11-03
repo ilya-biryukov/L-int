@@ -100,6 +100,16 @@ eval (Binary left op right) env = (val, newExpr)
     applyOp "+" = liftOp2 (+)
     applyOp "-" = liftOp2 (-)
     applyOp "*" = liftOp2 (*)
+    applyOp "/" = liftOp2 div
+    applyOp "%" = liftOp2 rem
+    applyOp "==" = liftOp2 (\x y -> boolToInt $ x == y)
+    applyOp "!=" = liftOp2 (\x y -> boolToInt $ x /= y)
+    applyOp "<" = liftOp2 (\x y -> boolToInt $ x < y)
+    applyOp "<=" = liftOp2 (\x y -> boolToInt $ x <= y)
+    applyOp ">" = liftOp2 (\x y -> boolToInt $ x > y)
+    applyOp ">=" = liftOp2 (\x y -> boolToInt $ x >= y)
+    boolToInt True = 1
+    boolToInt False = 0
 eval expr env = (val, newExpr)
   where
   val = eval' expr env

@@ -60,3 +60,13 @@ eval (Binary left op right) env =
     applyOp "+" = (+)
     applyOp "-" = (-)
     applyOp "*" = (*)
+    applyOp "/" = div
+    applyOp "%" = rem
+    applyOp "==" = \x y -> boolToInt $ x == y
+    applyOp "!=" = \x y -> boolToInt $ x /= y
+    applyOp "<" = \x y -> boolToInt $ x < y
+    applyOp "<=" = \x y -> boolToInt $ x <= y
+    applyOp ">" = \x y -> boolToInt $ x > y
+    applyOp ">=" = \x y -> boolToInt $ x >= y
+    boolToInt True = 1
+    boolToInt False = 0
