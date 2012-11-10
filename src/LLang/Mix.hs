@@ -4,6 +4,7 @@ module LLang.Mix(
 
 import System.IO(hFlush, stdout)
 import Data.Maybe
+import Control.Monad(liftM)
 
 import LLang.AST
 import qualified Data.Map.Strict as Map
