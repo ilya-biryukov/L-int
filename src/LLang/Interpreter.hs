@@ -44,8 +44,8 @@ intStatement s@(While expr body) env =
     _ -> intStatement body env >>= intStatement s
 intStatement (ITE cond th el) env =
   case eval cond env of
-    0 -> intStatement th env
-    _ -> intStatement el env
+    0 -> intStatement el env
+    _ -> intStatement th env
 
 -- | Evaluates expression in a given Environment
 eval :: Expression -> Environment -> Integer
