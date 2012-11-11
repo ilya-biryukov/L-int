@@ -30,7 +30,7 @@ printStatement (ITE cond th el) ind =
   printText "else\n" . printIndent ind .
   printInCurlyBraces el ind
 printStatement (While cond s) ind = 
-  printText "whlie " . printExpression cond . printText " do\n" . printIndent ind .
+  printText "while " . printExpression cond . printText " do\n" . printIndent ind .
   printInCurlyBraces s ind
 printStatement s _ = printStatement' s
 
