@@ -33,7 +33,16 @@ optionDescriptions = [
 
 processNonOptionArgs :: Options -> [String] -> IO Options
 processNonOptionArgs opts [file] = return opts { inputFile = file }
+processNonOptionArgs _ [] = printUsage >> exitSuccess
 processNonOptionArgs _ _ = putStrLn "Exactly one input file required" >> exitSuccess
+
+printUsage :: IO()
+printUsage = putStrLn $ usageInfo header optionDescriptions
+  where
+  header = 
+    "Usage: l-int [options] input-file\n" ++ 
+    "Availible options:"
+
 
 main :: IO ()
 main = do
@@ -42,7 +51,7 @@ main = do
   opts <- foldl (>>=) (return startOptions) optFuns >>= flip processNonOptionArgs inFiles
   input <- readFile $ inputFile opts
   processProgram (mode opts) $ readProgram $ lines input
-  where
+    where
     startOptions = Options { mode = Int, inputFile = "-"}
     processProgram Int prg = int prg
     processProgram Mix prg = liftM printProgram (mix prg) >>= putStrLn
