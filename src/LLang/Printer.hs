@@ -14,10 +14,11 @@ printIndent n =
   printText $ replicate n ' '
 
 printInCurlyBraces :: Statement -> Indent -> ShowS
-printInCurlyBraces s ind = 
+printInCurlyBraces s@(Sequence _ _) ind = 
   printText "{\n" . printIndent (ind + 4) . 
   printStatement s (ind + 4) . printText "\n" . printIndent ind .
   printText "}"
+printInCurlyBraces s ind = printStatement s $ ind + 4
 
 printStatement :: Statement -> Indent -> ShowS
 printStatement (Sequence s1 s2) ind =
