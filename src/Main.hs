@@ -27,7 +27,7 @@ optionDescriptions = [
               "int" -> return opt { mode = Int }
               _ -> putStrLn "Invalid value for 'mode' option. Use 'mix' or 'int'." 
                   >> exitSuccess)
-            "STRING")
+            "MODE")
         "Mode of operation: 'mix' or 'int'"
   ]
 
